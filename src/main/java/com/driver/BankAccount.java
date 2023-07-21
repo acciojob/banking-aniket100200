@@ -78,6 +78,7 @@ public class BankAccount {
         // Remember to throw "Insufficient Balance" exception, if the remaining amount would be less than minimum balance
         try{
             if (balance < amount) throw new Exception("Insufficient Balance");
+            else setBalance(getBalance()-amount);
         }
         catch(Exception e){
             System.out.println(e.getMessage());
