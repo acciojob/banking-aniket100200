@@ -1,5 +1,7 @@
 package com.driver;
 
+import java.util.PriorityQueue;
+
 public class CurrentAccount extends BankAccount{
     String tradeLicenseId; //consists of Uppercase English characters only
 
@@ -8,15 +10,9 @@ public class CurrentAccount extends BankAccount{
         // minimum balance is 5000 by default. If balance is less than 5000, throw "Insufficient Balance" exception
 
             super(name, balance, 5000);
-            this.tradeLicenseId = tradeLicenseId;
-        try
-        {
+            this.tradeLicenseId=tradeLicenseId;
             if (balance < 5000) throw new Exception("Insufficient Balance");
-        }
-        catch(Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
+
 
 
 
@@ -29,7 +25,7 @@ public class CurrentAccount extends BankAccount{
         // If the characters of the license Id can be rearranged to create any valid license Id
         // If it is not possible, throw "Valid License can not be generated" Exception
 
-        try{
+
             String s = tradeLicenseId;
             if (isValid(s))
             {
@@ -38,11 +34,7 @@ public class CurrentAccount extends BankAccount{
             {
                 //do nothing.. we did in ispossible function
             } else throw new Exception("Valid License can not be generated");
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
+
 
     }
 
@@ -54,42 +46,61 @@ public class CurrentAccount extends BankAccount{
             }
             return true;
     }
-    public boolean isPossible(String s)
-    {
-         int n=s.length();
-         int[]fre=new int[26];
-         for(int i=0;i<n;i++)fre[s.charAt(i)-'A']++;
-         int limit=(n/2)+1;
-         StringBuilder sb=new StringBuilder();
-         for(int i=0;i<n;i++)
-         {
-             if(fre[i]>limit)return false;
-         }
 
-         //else it is possible to rearrange..
-
-        char[]arr=s.toCharArray();
-         for(int i=1;i<n;i++)
-         {
-             if(arr[i]==arr[i-1])
-             {
-                 for(int j=i+1;i<n;i++)
-                 {
-                     if(arr[j]!=arr[i-1])
-                     {
-                         char temp=arr[i];
-                         arr[i]=arr[j];
-                         arr[i]=temp;
-                     }
-                 }
-             }
-         }
-
-         tradeLicenseId=String.valueOf(arr);
-         return true;
+    class Pair{
+        char ch;
+        int fre;
+        public Pair(char ch,int  fre){
+            this.ch=ch;
+            this.fre=fre;
+        }
 
     }
+    public  boolean isPossible(String s)
+    {
+        int n=s.length();
+        int[]fre=new int[26];
+        for(int i=0;i<n;i++)fre[s.charAt(i)-'A']++;
+        int limit=(n+1/2);
+       PriorityQueue<Pair>pq=new PriorityQueue<>((a,b)->{
+           return b.fre-a.fre;
+       });
+        for(int i=0;i<26;i++){
+            if(fre[i]>limit)return false;
+            else pq.add(new Pair((char)(i+'A'),fre[i]));
+        }
 
+       char[]ans=new char[n];
+        int index=0;
+        while(pq.size()>0 && index<n)
+        {
+            Pair p=pq.remove();
+            char ch=p.ch;
+             int freq=p.fre;
+            while(freq-->0 && index<n)
+            {
+                ans[index]=ch;
+                index+=2;
+            }
+        }
+        index=1;
+        while(pq.size()>0 && index<n)
+        {
+            Pair p=pq.remove();
+            char ch=p.ch;
+            int freq=p.fre;
+            while(freq-->0 && index<n)
+            {
+                ans[index]=ch;
+                index+=2;
+            }
+        }
+
+
+        tradeLicenseId=String.valueOf(ans);
+        return true;
+
+    }
     public String getTradeLicenseId()
     {
         return tradeLicenseId;
